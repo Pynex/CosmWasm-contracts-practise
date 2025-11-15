@@ -1,5 +1,4 @@
 use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, entry_point, to_json_binary};
-// use cw_ownable::{Action, OwnershipError, get_ownership, update_ownership};
 use crate::error::ContractError;
 use crate::msg::{CountResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::COUNT;
