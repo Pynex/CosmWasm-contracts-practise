@@ -1,0 +1,9 @@
+C:\Users\ila82\cosm\cw20\target\debug\deps\cosmwasm_schema_derive-c5f991d063cfc9e8.d: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\cw_serde.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\generate_api.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses\context.rs
+
+C:\Users\ila82\cosm\cw20\target\debug\deps\cosmwasm_schema_derive-c5f991d063cfc9e8.dll: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\cw_serde.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\generate_api.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses\context.rs
+
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\lib.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\cw_serde.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\generate_api.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\cosmwasm-schema-derive-1.5.11\src\query_responses\context.rs:

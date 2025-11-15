@@ -1,0 +1,1 @@
+C:\Users\ila82\cosm\cw20\target\debug\cw20.dll: C:\Users\ila82\cosm\cw20\src\contract.rs C:\Users\ila82\cosm\cw20\src\errors.rs C:\Users\ila82\cosm\cw20\src\lib.rs C:\Users\ila82\cosm\cw20\src\msg.rs C:\Users\ila82\cosm\cw20\src\state.rs

@@ -1,0 +1,12 @@
+C:\Users\ila82\cosm\cw20\target\debug\deps\ecdsa-d4edc94afd7377d5.d: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\normalized.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\recovery.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\der.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\hazmat.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\signing.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\verifying.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\../README.md
+
+C:\Users\ila82\cosm\cw20\target\debug\deps\libecdsa-d4edc94afd7377d5.rmeta: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\normalized.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\recovery.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\der.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\hazmat.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\signing.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\verifying.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\../README.md
+
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\lib.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\normalized.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\recovery.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\der.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\hazmat.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\signing.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\verifying.rs:
+C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\ecdsa-0.16.9\src\../README.md:
