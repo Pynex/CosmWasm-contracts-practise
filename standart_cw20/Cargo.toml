@@ -1,0 +1,33 @@
+[package]
+name = "standart_cw20"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+cw20-base = "2.0"
+cw20 = "2.0"
+cosmwasm-std = "2.1"
+cosmwasm-schema = "2.1"
+cw-ownable = "2.0"
+cw-storage-plus = "2.0"
+schemars = "0.8"
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+thiserror = "2.0"
+ed25519-zebra = { version = "4.1", features = ["alloc"] }
+
+[dev-dependencies]
+cw-multi-test = "2.1"
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
+overflow-checks = true
