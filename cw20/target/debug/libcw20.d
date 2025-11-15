@@ -1,1 +1,0 @@
-C:\Users\ila82\cosm\cw20\target\debug\libcw20.rlib: C:\Users\ila82\cosm\cw20\src\contract.rs C:\Users\ila82\cosm\cw20\src\errors.rs C:\Users\ila82\cosm\cw20\src\lib.rs C:\Users\ila82\cosm\cw20\src\msg.rs C:\Users\ila82\cosm\cw20\src\state.rs
