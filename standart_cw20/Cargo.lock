@@ -389,23 +389,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "custom_cw20"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-multi-test",
- "cw-ownable",
- "cw-storage-plus",
- "cw20",
- "cw20-base",
- "ed25519-zebra",
- "schemars",
- "serde",
- "thiserror 2.0.17",
-]
-
-[[package]]
 name = "cw-address-like"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1160,6 +1143,23 @@ checksum = "d91ed6c858b01f942cd56b37a94b3e0a1798290327d1236e4d9cf4eaca44d29d"
 dependencies = [
  "base64ct",
  "der",
+]
+
+[[package]]
+name = "standart_cw20"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-multi-test",
+ "cw-ownable",
+ "cw-storage-plus",
+ "cw20",
+ "cw20-base",
+ "ed25519-zebra",
+ "schemars",
+ "serde",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
