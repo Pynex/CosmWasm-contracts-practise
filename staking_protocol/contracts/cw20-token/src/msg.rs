@@ -10,29 +10,6 @@ pub struct InstantiateMsg {
 }
 
 #[cw_serde]
-pub struct BalanceResponse {
-    pub balance: Uint128,
-}
-
-#[cw_serde]
-pub struct AllowanceResponse {
-    pub allowance: Uint128,
-}
-
-#[cw_serde]
-pub struct TokenInfoResponse {
-    pub name: String,
-    pub symbol: String,
-    pub decimals: u8,
-    pub total_supply: Uint128,
-}
-
-#[cw_serde]
-pub struct MinterResponse {
-    pub minter: Option<String>,
-}
-
-#[cw_serde]
 pub enum ExecuteMsg {
     Transfer {
         recipient: String,
@@ -75,4 +52,25 @@ pub enum QueryMsg {
     Minter {},
 }
 
+#[cw_serde]
+pub struct BalanceResponse {
+    pub balance: Uint128,
+}
 
+#[cw_serde]
+pub struct AllowanceResponse {
+    pub allowance: Uint128,
+}
+
+#[cw_serde]
+pub struct TokenInfoResponse {
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u8,
+    pub total_supply: Uint128,
+}
+
+#[cw_serde]
+pub struct MinterResponse {
+    pub minter: Option<String>,
+}
