@@ -1,7 +1,0 @@
-C:\Users\ila82\cosm\staking_protocol\target\debug\deps\rfc6979-1c745b26b7b8db9a.d: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\ct_cmp.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\../README.md
-
-C:\Users\ila82\cosm\staking_protocol\target\debug\deps\librfc6979-1c745b26b7b8db9a.rmeta: C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\lib.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\ct_cmp.rs C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\../README.md
-
-C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\lib.rs:
-C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\ct_cmp.rs:
-C:\Users\ila82\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rfc6979-0.4.0\src\../README.md:
