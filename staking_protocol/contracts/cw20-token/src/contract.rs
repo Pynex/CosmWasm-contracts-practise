@@ -1,4 +1,4 @@
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, entry_point, to_json_binary, Uint128, StdResult};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, entry_point, to_json_binary, Uint128, StdResult, StdError};
 use crate::error::ContractError;
 use crate::msg::{
     AllowanceResponse, BalanceResponse, ExecuteMsg, InstantiateMsg, 
@@ -110,7 +110,7 @@ pub fn execute_tranfer(
     BALANCES.update(deps.storage, &info.sender, |bal| -> StdResult<_> {
         let bal = bal.unwrap_or_default();
         bal.checked_sub(amount)
-            .map_err(|_|  ContractError::InsufficientBalance {}.into())
+            .map_err(|_| StdError::generic_err("Insufficient balance"))
     })?;
 
     BALANCES.update(deps.storage, &rcpt, |bal| -> StdResult<_> {
@@ -132,7 +132,7 @@ pub fn execute_burn(
     BALANCES.update(deps.storage, &info.sender, |bal| -> StdResult<_> {
         let bal = bal.unwrap_or_default();
         bal.checked_sub(amount)
-            .map_err(|_| ContractError::InsufficientBalance {}.into())
+            .map_err(|_| StdError::generic_err("Insufficient balance"))
     })?;
 
     TOKEN_INFO.update(deps.storage, |mut info| -> StdResult<_> {
@@ -214,7 +214,7 @@ pub fn execute_tranfer_from(
     BALANCES.update(deps.storage, &owner_addr, |bal| -> StdResult<_> {
         let bal = bal.unwrap_or_default();
         bal.checked_sub(amount)
-            .map_err(|_|  ContractError::InsufficientBalance {}.into())
+            .map_err(|_|  StdError::generic_err("Insufficient balance"))
     })?;
 
     BALANCES.update(deps.storage, &rcpt_addr, |bal| -> StdResult<_>{
