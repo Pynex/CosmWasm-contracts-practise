@@ -6,5 +6,3 @@ pub struct Cw20Coin {
     pub address: String,
     pub amount: Uint128,
 }
-
-pub const PRECISION: u128 = 1_000_000;

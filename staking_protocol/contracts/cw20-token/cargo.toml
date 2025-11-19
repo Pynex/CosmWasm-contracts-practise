@@ -15,8 +15,9 @@ cw-ownable.workspace = true
 schemars.workspace = true
 serde.workspace = true
 thiserror.workspace = true
+ed25519-zebra = { version = "4.1", features = ["alloc"] }  # ← напрямую
 
 shared = { path = "../../packages/shared" }
 
 [dev-dependencies]
-cw-multi-test = "2.2"  # Вместо 3.0 или 0.20
+cw-multi-test.workspace = true

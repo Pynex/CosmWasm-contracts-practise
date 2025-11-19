@@ -5,7 +5,7 @@ use cosmwasm_schema::cw_serde;
 #[cw_serde]
 pub struct Config {
     pub token_address: Addr,
-    pub reward_rate: u64, // reward per second
+    pub apr: u64, // 1% = 100, 10% = 1000
     pub lockup_period: u64,
 }
 
