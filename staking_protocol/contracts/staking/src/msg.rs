@@ -1,6 +1,6 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::Uint128;
-use cw_ownable::{cw_ownable_execute, cw_ownable_query};
+use cosmwasm_std::Uint128; 
+use cw_ownable::Action;
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -10,7 +10,7 @@ pub struct InstantiateMsg {
     pub lockup_period: u64,
 }
 
-#[cw_ownable_execute]
+#[cw_serde]
 pub enum ExecuteMsg {
     Stake {
         amount: Uint128,
@@ -20,13 +20,13 @@ pub enum ExecuteMsg {
     },
     ClaimRewards {},
     ChangeConfig {
-        new_reward_rate: u64,
+        new_apr: u64,
         new_lockup_period: u64,
     },
+    UpdateOwnership(Action),
 }
 
 #[derive(QueryResponses)]
-#[cw_ownable_query]
 #[cw_serde]
 pub enum QueryMsg {
     #[returns(StakeResponse)]
@@ -40,6 +40,9 @@ pub enum QueryMsg {
 
     #[returns(TotalStakedResponse)]
     TotalStaked {},
+
+    #[returns(cw_ownable::Ownership<cosmwasm_std::Addr>)]
+    Ownership {},
 }
 
 #[cw_serde]
@@ -51,7 +54,7 @@ pub struct StakeResponse {
 #[cw_serde]
 pub struct ConfigResponse {
     pub token_address: String,
-    pub reward_rate: u64,
+    pub apr: u64,
     pub lockup_period: u64,
 }
 

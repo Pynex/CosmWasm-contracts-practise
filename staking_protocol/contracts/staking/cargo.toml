@@ -7,16 +7,17 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-cosmwasm-schema.workspace = true
 cosmwasm-std.workspace = true
+cosmwasm-schema.workspace = true
+cw-ownable.workspace = true
 cw-storage-plus.workspace = true
 cw20.workspace = true
-cw-ownable.workspace = true
 schemars.workspace = true
 serde.workspace = true
 thiserror.workspace = true
-
-shared = { path = "../../packages/shared" }
+cw20-token = { path = "../cw20-token" }
+ed25519-zebra = { version = "4.1", features = ["alloc"] }  # ← напрямую
 
 [dev-dependencies]
-cw-multi-test = "2.2"  # Вместо 3.0 или 0.20
+cosmwasm-std.workspace = true
+cw-multi-test.workspace = true

@@ -15,19 +15,21 @@ pub fn instantiate (
     _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    initialize_owner(deps.storage, deps.api, Some(&msg.owner))?;
+    initialize_owner(deps.storage, deps.api, &msg.owner)?;
     let token = deps.api.addr_validate(&msg.token_address)?;
 
     let config = Config{
         token_address: token,
-        reward_rate: msg.reward_rate,
+        apr: msg.reward_rate,
         lockup_period: msg.lockup_period,
     };
 
     CONFIG.save(deps.storage, &config)?;
 
+    TOTAL_STAKED.save(deps.storage, &Uint128::zero())?;
+
     Ok(Response::new()
-        .add_attribute("action", "instatiate"))
+        .add_attribute("action", "instantiate"))
 }
 
 #[entry_point]
@@ -51,8 +53,8 @@ pub fn execute (
         ExecuteMsg::ClaimRewards {} => {
             execute_claim_rewards(deps, env, info)
         }
-        ExecuteMsg::ChangeConfig { new_reward_rate, new_lockup_period } => {
-            execute_change_config(deps, info, new_reward_rate, new_lockup_period)
+        ExecuteMsg::ChangeConfig { new_apr, new_lockup_period } => {
+            execute_change_config(deps, info, new_apr, new_lockup_period)
         }
     }
 }
@@ -134,7 +136,7 @@ pub fn execute_unstake(
         return Err(ContractError::LockupNotExpired {});
     }
 
-    let reward_amount = Uint128::from(staked_time * config.reward_rate);
+    let reward_amount = calculate_reward_apr(stake_info.amount, staked_time, config.apr);
     let mut messages = vec![];
 
     if !reward_amount.is_zero() {
@@ -192,7 +194,7 @@ pub fn execute_claim_rewards(
         return Err(ContractError::LockupNotExpired {});
     }
 
-    let reward_amount = Uint128::from(staked_time * config.reward_rate);
+    let reward_amount = calculate_reward_apr(stake_info.amount, staked_time, config.apr);
     if reward_amount.is_zero() {
         return Err(ContractError::ZeroReward {});
     }
@@ -222,7 +224,7 @@ pub fn execute_claim_rewards(
 pub fn execute_change_config(
     deps: DepsMut,
     info: MessageInfo,
-    new_reward_rate: u64,
+    new_apr: u64,
     new_lockup_period: u64,
 ) -> Result<Response, ContractError> {
     cw_ownable::assert_owner(deps.storage, &info.sender)?;
@@ -230,7 +232,7 @@ pub fn execute_change_config(
 
     let config = Config {
         token_address: curr_config.token_address,
-        reward_rate: new_reward_rate,
+        apr: new_apr,
         lockup_period: new_lockup_period,
     };
 
@@ -238,8 +240,28 @@ pub fn execute_change_config(
 
     Ok(Response::new()
         .add_attribute("action", "change_config")
-        .add_attribute("new_reward_rate", new_reward_rate.to_string())
+        .add_attribute("new_apr", new_apr.to_string())
         .add_attribute("new_lockup_period", new_lockup_period.to_string()))
+}
+
+fn calculate_reward_apr(stake_amount: Uint128, staked_seconds: u64, annual_rate_bps: u64) -> Uint128 {
+    if stake_amount.is_zero() || staked_seconds == 0 || annual_rate_bps == 0 {
+        return Uint128::zero();
+    }
+
+    const SECONDS_PER_YEAR: u64 = 365 * 24 * 60 * 60;
+    
+    let stake = stake_amount.u128();
+    let rate = annual_rate_bps as u128;
+    let time = staked_seconds as u128;
+    
+    let reward = stake
+        .checked_mul(rate).unwrap()
+        .checked_mul(time).unwrap()
+        .checked_div(10_000).unwrap()
+        .checked_div(SECONDS_PER_YEAR as u128).unwrap();
+    
+    Uint128::from(reward)
 }
 
 fn query_config(
@@ -248,7 +270,7 @@ fn query_config(
     let config = CONFIG.load(deps.storage)?;
     Ok(ConfigResponse {
         token_address: config.token_address.to_string(),
-        reward_rate: config.reward_rate,
+        apr: config.apr,
         lockup_period: config.lockup_period,
     })
 }
@@ -265,7 +287,7 @@ fn query_reward(
     let rewards = match stake_info {
         Some(s) => {
             let staked_time = env.block.time.seconds() - s.stake_time.seconds();
-            Uint128::from(staked_time * config.reward_rate)
+            calculate_reward_apr(s.amount, staked_time, config.apr)
         }
         None => Uint128::zero()
     };
@@ -277,20 +299,22 @@ fn query_reward(
 
 fn query_stake(
     deps: Deps,
-    env: Env,
+    _env: Env,
     address: String
 ) -> StdResult<StakeResponse> {
     let addr = deps.api.addr_validate(&address)?;
-    let stake_info = STAKES.may_load(deps.storage, &addr)?.unwrap_or(
-        StakeInfo {
-            amount: Uint128::zero(),
-            stake_time: env.block.time,
-        }
-    );
+    let stake_info = STAKES.may_load(deps.storage, &addr)?;
 
-    Ok(StakeResponse {
-        amount: stake_info.amount,
-        stake_time: stake_info.stake_time.seconds()})
+    match stake_info {
+        Some(s) => Ok(StakeResponse {
+            amount: s.amount,
+            stake_time: s.stake_time.seconds(),
+        }),
+        None => Ok(StakeResponse {
+            amount: Uint128::zero(),
+            stake_time: 0,
+        })
+    }
 }
 
 fn query_total_staked(
