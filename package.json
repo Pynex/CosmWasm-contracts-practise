@@ -1,0 +1,27 @@
+{
+  "name": "cosm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pynex/CosmWasm-contracts-practise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Pynex/CosmWasm-contracts-practise/issues"
+  },
+  "homepage": "https://github.com/Pynex/CosmWasm-contracts-practise#readme",
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.38.1",
+    "@cosmjs/crypto": "^0.38.1",
+    "@cosmjs/proto-signing": "^0.38.1",
+    "@cosmjs/stargate": "^0.38.1"
+  }
+}
