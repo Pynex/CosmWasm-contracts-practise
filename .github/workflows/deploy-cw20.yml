@@ -1,0 +1,94 @@
+name: Deploy CW20 Contract
+
+on:
+  workflow_dispatch: # Ручной запуск
+  push:
+    branches:
+      - main
+    paths:
+      - "standart_cw20/**"
+      - "scripts/deploy_cw20.js"
+      - ".github/workflows/deploy-cw20.yml"
+
+env:
+  RUST_VERSION: "1.75.0"
+  NODE_VERSION: "20"
+
+jobs:
+  deploy:
+    name: Build and Deploy CW20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Build WASM contract
+        working-directory: standart_cw20
+        run: |
+          cargo build --release --target wasm32-unknown-unknown
+
+      - name: Install wasm-opt
+        run: |
+          wget https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
+          tar -xzf binaryen-version_116-x86_64-linux.tar.gz
+          sudo mv binaryen-version_116/bin/* /usr/local/bin/
+          wasm-opt --version
+
+      - name: Optimize WASM
+        working-directory: standart_cw20
+        run: |
+          mkdir -p artifacts
+          wasm-opt --disable-bulk-memory -Oz --strip-debug \
+            target/wasm32-unknown-unknown/release/standart_cw20.wasm \
+            -o artifacts/standart_cw20.wasm
+          ls -lh artifacts/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check balance before deploy
+        env:
+          MNEMONIC: ${{ secrets.MNEMONIC }}
+        run: |
+          node check_balance/scripts/get_balance.js || echo "Balance check failed, continuing..."
+
+      - name: Deploy contract
+        env:
+          MNEMONIC: ${{ secrets.MNEMONIC }}
+        timeout-minutes: 10
+        run: |
+          echo "Starting deployment..."
+          node scripts/deploy_cw20.js
+          echo "Deployment completed!"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: wasm-artifacts
+          path: standart_cw20/artifacts/*.wasm
+          retention-days: 30

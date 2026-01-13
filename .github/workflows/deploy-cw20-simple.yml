@@ -1,0 +1,51 @@
+name: Deploy CW20 (Simple - Pre-built WASM)
+
+on:
+  workflow_dispatch: # Только ручной запуск
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  deploy:
+    name: Deploy Pre-built CW20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify WASM file exists
+        working-directory: standart_cw20
+        run: |
+          if [ ! -f "artifacts/standart_cw20.wasm" ]; then
+            echo "❌ WASM file not found in artifacts/"
+            echo "Please build the contract first or use deploy-cw20.yml workflow"
+            exit 1
+          fi
+          ls -lh artifacts/
+          echo "✅ WASM file found"
+
+      - name: Check balance
+        env:
+          MNEMONIC: ${{ secrets.MNEMONIC }}
+        run: |
+          node check_balance/scripts/get_balance.js || echo "Balance check skipped"
+
+      - name: Deploy contract
+        env:
+          MNEMONIC: ${{ secrets.MNEMONIC }}
+        timeout-minutes: 10
+        run: |
+          echo "🚀 Starting deployment..."
+          node scripts/deploy_cw20.js
+          echo "✅ Deployment completed!"
