@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wasm-artifacts
           path: standart_cw20/artifacts/*.wasm
