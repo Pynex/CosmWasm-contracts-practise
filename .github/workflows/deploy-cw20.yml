@@ -40,14 +40,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Build & optimize WASM via cosmwasm/workspace-optimizer
+      - name: Build WASM contract
+        working-directory: standart_cw20
         run: |
-          docker run --rm \
-            -v "$PWD/standart_cw20":/code \
-            --mount type=volume,source=standart_cw20_cache,target=/code/target \
-            --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-            cosmwasm/workspace-optimizer:0.16.0
-          ls -lh standart_cw20/artifacts
+          cargo build --release --target wasm32-unknown-unknown
+
+      - name: Install wasm-opt
+        run: |
+          wget https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
+          tar -xzf binaryen-version_116-x86_64-linux.tar.gz
+          sudo mv binaryen-version_116/bin/* /usr/local/bin/
+          wasm-opt --version
+
+      - name: Optimize WASM (remove bulk memory)
+        working-directory: standart_cw20
+        run: |
+          mkdir -p artifacts
+          wasm-opt --disable-bulk-memory -Oz --strip-debug \
+            target/wasm32-unknown-unknown/release/standart_cw20.wasm \
+            -o artifacts/standart_cw20.wasm
+          ls -lh artifacts/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
