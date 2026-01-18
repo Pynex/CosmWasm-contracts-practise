@@ -23,8 +23,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Rust (old version without bulk-memory by default)
-        uses: dtolnay/rust-toolchain@1.70.0
+      - name: Setup Rust (1.75.0 - before bulk-memory default)
+        uses: dtolnay/rust-toolchain@1.75.0
         with:
           targets: wasm32-unknown-unknown
 
