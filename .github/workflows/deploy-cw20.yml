@@ -40,6 +40,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: Regenerate Cargo.lock for Rust 1.75.0
+        working-directory: standart_cw20
+        run: |
+          rm -f Cargo.lock
+          cargo generate-lockfile
+
       - name: Build WASM contract (without bulk-memory)
         working-directory: standart_cw20
         env:
