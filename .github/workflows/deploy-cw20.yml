@@ -23,8 +23,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Rust (old version without bulk-memory by default)
+        uses: dtolnay/rust-toolchain@1.70.0
         with:
           targets: wasm32-unknown-unknown
 
@@ -40,8 +40,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Build WASM contract
+      - name: Build WASM contract (without bulk-memory)
         working-directory: standart_cw20
+        env:
+          RUSTFLAGS: "-C target-feature=-bulk-memory -C target-feature=-reference-types -C target-feature=-sign-ext"
         run: |
           cargo build --release --target wasm32-unknown-unknown
 
