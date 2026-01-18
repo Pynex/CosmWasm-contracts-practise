@@ -23,8 +23,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Rust (1.75.0 - before bulk-memory default)
-        uses: dtolnay/rust-toolchain@1.75.0
+      - name: Setup Rust (1.85.0 - supports edition 2024, but no bulk-memory default)
+        uses: dtolnay/rust-toolchain@1.85.0
         with:
           targets: wasm32-unknown-unknown
 
@@ -40,11 +40,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Regenerate Cargo.lock for Rust 1.75.0
+      - name: Generate Cargo.lock if missing
         working-directory: standart_cw20
         run: |
-          rm -f Cargo.lock
-          cargo generate-lockfile
+          cargo generate-lockfile || true
 
       - name: Build WASM contract (without bulk-memory)
         working-directory: standart_cw20
