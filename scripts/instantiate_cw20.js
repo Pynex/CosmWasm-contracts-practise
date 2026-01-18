@@ -1,35 +1,20 @@
-// Скрипт для деплоя базового cw20 контракта
-
-const fs = require("fs");
-const path = require("path");
-const { TextEncoder } = require("util");
+// Скрипт для инстанцирования cw20 контракта по известному code ID
 
 const { DirectSecp256k1HdWallet } = require("@cosmjs/proto-signing");
 const { SigningStargateClient, GasPrice } = require("@cosmjs/stargate");
 const { stringToPath } = require("@cosmjs/crypto");
 const Long = require("long");
+const { TextEncoder } = require("util");
 const {
-  MsgStoreCode,
   MsgInstantiateContract,
 } = require("cosmjs-types/cosmwasm/wasm/v1/tx");
 
 const RPC_ENDPOINT = "http://206.189.115.37:26657/";
 const BECH32_PREFIX = "axm";
 
-// Пробуем сначала standart_cw20, потом cw20
-const WASM_PATHS = [
-  path.join(__dirname, "..", "standart_cw20", "artifacts", "standart_cw20.wasm"),
-  path.join(__dirname, "..", "cw20", "artifacts", "cw20.wasm"),
-];
-
 const encoder = new TextEncoder();
 
-async function connect(
-  mnemonic,
-  rpcEndpoint,
-  gasPriceStr = "1.5uaxm",
-  gasAdjustment = 1.8
-) {
+async function connect(mnemonic, rpcEndpoint, gasPriceStr = "1.5uaxm", gasAdjustment = 1.8) {
   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     hdPaths: [stringToPath("m/44'/546'/0'/0/0")],
     prefix: BECH32_PREFIX,
@@ -46,7 +31,6 @@ async function connect(
 
   console.log("Connected to RPC:", rpcEndpoint);
 
-  client.registry.register("/cosmwasm.wasm.v1.MsgStoreCode", MsgStoreCode);
   client.registry.register(
     "/cosmwasm.wasm.v1.MsgInstantiateContract",
     MsgInstantiateContract
@@ -56,6 +40,8 @@ async function connect(
 }
 
 async function main() {
+  const codeId = parseInt(process.argv[2]) || 27;
+
   const mnemonic = process.env.MNEMONIC;
   if (!mnemonic) {
     throw new Error("Установи переменную окружения MNEMONIC с 24 словами.");
@@ -63,70 +49,8 @@ async function main() {
 
   const { client, sender } = await connect(mnemonic, RPC_ENDPOINT, "1.5uaxm", 1.8);
 
-  // Находим первый доступный wasm файл
-  let wasmPath = null;
-  for (const path of WASM_PATHS) {
-    if (fs.existsSync(path)) {
-      wasmPath = path;
-      console.log(`Using WASM file: ${path}`);
-      break;
-    }
-  }
-
-  if (!wasmPath) {
-    throw new Error(`WASM файл не найден. Проверьте пути: ${WASM_PATHS.join(", ")}`);
-  }
-
-  const wasm = fs.readFileSync(wasmPath);
-  console.log("WASM size (bytes):", wasm.length);
-
-  const storeMsg = {
-    typeUrl: "/cosmwasm.wasm.v1.MsgStoreCode",
-    value: MsgStoreCode.fromPartial({
-      sender,
-      wasmByteCode: wasm,
-    }),
-  };
-
-  console.log("Storing code...");
-  const storeResult = await client.signAndBroadcast(
-    sender,
-    [storeMsg],
-    "auto",
-    "store cw20"
-  );
-
-  if (storeResult.code !== 0) {
-    console.error("❌ Store failed!");
-    console.error("Error:", storeResult.rawLog);
-    console.error("Transaction hash:", storeResult.transactionHash);
-    process.exit(1);
-  }
-
-  console.log("✅ Code stored successfully!");
-
-  // Извлекаем code ID из события store_code
-  let codeId = null;
-  if (storeResult.logs?.[0]?.events) {
-    const storeCodeEvent = storeResult.logs[0].events.find((e) => e.type === "store_code");
-    if (storeCodeEvent?.attributes) {
-      const codeIdAttr = storeCodeEvent.attributes.find((a) => a.key === "code_id");
-      if (codeIdAttr) {
-        codeId = Number(codeIdAttr.value);
-      }
-    }
-  }
-
-  // Если не получилось из события, используем фиксированный code ID 28
-  if (!codeId) {
-    codeId = 28;
-    console.log("⚠️  Could not extract code ID from event, using 28");
-  }
-
-  if (!codeId) {
-    console.error("❌ Could not determine code ID");
-    process.exit(1);
-  }
+  console.log(`Using code ID: ${codeId}`);
+  console.log("");
 
   // Instantiate message для cw20
   const initMsg = {
@@ -144,7 +68,7 @@ async function main() {
     },
   };
 
-  const label = "cw20_test_token";
+  const label = `cw20_test_token_${Date.now()}`;
 
   const instMsg = {
     typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContract",
