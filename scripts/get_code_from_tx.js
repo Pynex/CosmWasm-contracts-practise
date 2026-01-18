@@ -84,10 +84,48 @@ async function main() {
       }
     }
 
+    // Если не нашли в events, пробуем парсить rawLog
+    if (!codeId && tx.rawLog) {
+      try {
+        const rawLogParsed = typeof tx.rawLog === 'string' ? JSON.parse(tx.rawLog) : tx.rawLog;
+        if (Array.isArray(rawLogParsed)) {
+          for (const log of rawLogParsed) {
+            if (log.events) {
+              for (const event of log.events) {
+                if (event.type === "store_code" && event.attributes) {
+                  for (const attr of event.attributes) {
+                    if (attr.key === "code_id" || attr.key === "codeId" || attr.key === "code.id") {
+                      codeId = Number(attr.value);
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Игнорируем ошибки парсинга
+      }
+    }
+
     if (codeId) {
       console.log("✅ Code ID:", codeId);
     } else {
       console.log("⚠️  Code ID not found in transaction");
+      console.log("");
+      console.log("Debug info:");
+      console.log("  Logs count:", tx.logs?.length || 0);
+      if (tx.logs && tx.logs.length > 0) {
+        console.log("  Events in first log:", tx.logs[0].events?.map(e => e.type).join(", ") || "none");
+        if (tx.logs[0].events) {
+          for (const event of tx.logs[0].events) {
+            if (event.type === "store_code") {
+              console.log("  store_code event attributes:", event.attributes?.map(a => `${a.key}=${a.value}`).join(", ") || "none");
+            }
+          }
+        }
+      }
     }
 
     if (contractAddress) {

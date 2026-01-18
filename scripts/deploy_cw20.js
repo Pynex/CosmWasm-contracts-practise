@@ -104,88 +104,25 @@ async function main() {
   }
 
   console.log("✅ Code stored successfully!");
-  console.log("Transaction hash:", storeResult.transactionHash);
 
-  // Пытаемся извлечь code ID из logs
+  // Находим последний code ID, созданный нашим адресом
   let codeId = null;
-
-  if (storeResult.logs && storeResult.logs.length > 0) {
-    const storeLog = storeResult.logs[0];
-    if (storeLog && storeLog.events) {
-      const storeCodeEvent = storeLog.events.find((e) => e.type === "store_code");
-      if (storeCodeEvent && storeCodeEvent.attributes) {
-        const codeIdAttr = storeCodeEvent.attributes.find(
-          (a) => a.key === "code_id" || a.key === "codeId"
-        );
-        if (codeIdAttr) {
-          codeId = Number(codeIdAttr.value);
-        }
-      }
-    }
-  }
-
-  // Если не получилось из logs, пробуем из rawLog
-  if (!codeId && storeResult.rawLog) {
+  for (let i = 100; i >= 1; i--) {
     try {
-      const rawLogParsed = typeof storeResult.rawLog === 'string'
-        ? JSON.parse(storeResult.rawLog)
-        : storeResult.rawLog;
-
-      if (Array.isArray(rawLogParsed)) {
-        for (const log of rawLogParsed) {
-          if (log.events) {
-            for (const event of log.events) {
-              if (event.type === "store_code" && event.attributes) {
-                for (const attr of event.attributes) {
-                  if (attr.key === "code_id" || attr.key === "codeId") {
-                    codeId = Number(attr.value);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
+      const codeInfo = await client.queryClient.wasm.getCodeInfo(i);
+      if (codeInfo?.creator === sender) {
+        codeId = i;
+        break;
       }
     } catch (e) {
-      // Игнорируем ошибки парсинга
-    }
-  }
-
-  // Если все еще не получилось, пробуем получить через query
-  if (!codeId) {
-    console.log("⚠️  Could not extract code ID from transaction, trying to query by transaction hash...");
-    try {
-      const tx = await client.getTx(storeResult.transactionHash);
-      if (tx && tx.logs && tx.logs.length > 0) {
-        for (const log of tx.logs) {
-          if (log.events) {
-            for (const event of log.events) {
-              if (event.type === "store_code" && event.attributes) {
-                for (const attr of event.attributes) {
-                  if (attr.key === "code_id" || attr.key === "codeId") {
-                    codeId = Number(attr.value);
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Failed to query transaction:", e.message);
+      // Code ID не существует
     }
   }
 
   if (!codeId) {
-    console.error("❌ Could not extract code ID from transaction");
-    console.error("Transaction hash:", storeResult.transactionHash);
-    console.error("Please use: node scripts/get_code_from_tx.js", storeResult.transactionHash);
+    console.error("❌ Could not find code ID");
     process.exit(1);
   }
-
-  console.log("Code ID:", codeId);
 
   // Instantiate message для cw20
   const initMsg = {
@@ -226,21 +163,69 @@ async function main() {
   );
 
   if (instResult.code !== 0) {
-    console.error("Instantiate failed:", instResult.rawLog);
+    console.error("❌ Instantiate failed!");
+    console.error("Error:", instResult.rawLog);
     console.error("Transaction hash:", instResult.transactionHash);
     process.exit(1);
   }
 
-  const instLog = instResult.logs[0];
-  const instEvent = instLog.events.find((e) => e.type === "instantiate");
-  const addrAttr =
-    instEvent.attributes.find((a) => a.key === "_contract_address") ||
-    instEvent.attributes.find((a) => a.key === "contract_address");
+  // Извлекаем адрес контракта
+  let contractAddress = null;
+  if (instResult.logs?.[0]?.events) {
+    const instEvent = instResult.logs[0].events.find((e) => e.type === "instantiate");
+    const addrAttr = instEvent?.attributes?.find(
+      (a) => a.key === "_contract_address" || a.key === "contract_address"
+    );
+    if (addrAttr) {
+      contractAddress = addrAttr.value;
+    }
+  }
 
-  console.log("✅ Deployment successful!");
-  console.log("Code ID:", codeId);
-  console.log("Contract address:", addrAttr.value);
+  if (!contractAddress) {
+    console.error("❌ Could not extract contract address");
+    console.error("Transaction hash:", instResult.transactionHash);
+    process.exit(1);
+  }
+
+  console.log("✅ Contract instantiated successfully!");
+  console.log("Contract address:", contractAddress);
   console.log("Transaction hash:", instResult.transactionHash);
+
+  // Тестовый перевод токенов
+  const testRecipient = "axm18xn4vtfkqwusvn02hglfuu3xcm549nd7js9ww5";
+  const transferAmount = "100000000"; // 100 tokens with 6 decimals
+
+  console.log("");
+  console.log("Sending test transfer...");
+  console.log(`  From: ${sender}`);
+  console.log(`  To: ${testRecipient}`);
+  console.log(`  Amount: ${transferAmount}`);
+
+  try {
+    const transferMsg = {
+      transfer: {
+        recipient: testRecipient,
+        amount: transferAmount,
+      },
+    };
+
+    const transferResult = await client.execute(
+      sender,
+      contractAddress,
+      transferMsg,
+      "auto",
+      "test transfer"
+    );
+
+    if (transferResult.code !== 0) {
+      console.error("⚠️  Transfer failed:", transferResult.rawLog);
+    } else {
+      console.log("✅ Transfer successful!");
+      console.log("Transaction hash:", transferResult.transactionHash);
+    }
+  } catch (error) {
+    console.error("⚠️  Transfer error:", error.message);
+  }
 }
 
 main().catch((err) => {
