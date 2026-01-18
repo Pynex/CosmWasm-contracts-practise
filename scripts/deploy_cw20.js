@@ -106,36 +106,85 @@ async function main() {
   console.log("✅ Code stored successfully!");
   console.log("Transaction hash:", storeResult.transactionHash);
 
-  if (!storeResult.logs || storeResult.logs.length === 0) {
-    console.error("❌ No logs in store transaction");
-    console.error("Full result:", JSON.stringify(storeResult, null, 2));
+  // Пытаемся извлечь code ID из logs
+  let codeId = null;
+
+  if (storeResult.logs && storeResult.logs.length > 0) {
+    const storeLog = storeResult.logs[0];
+    if (storeLog && storeLog.events) {
+      const storeCodeEvent = storeLog.events.find((e) => e.type === "store_code");
+      if (storeCodeEvent && storeCodeEvent.attributes) {
+        const codeIdAttr = storeCodeEvent.attributes.find(
+          (a) => a.key === "code_id" || a.key === "codeId"
+        );
+        if (codeIdAttr) {
+          codeId = Number(codeIdAttr.value);
+        }
+      }
+    }
+  }
+
+  // Если не получилось из logs, пробуем из rawLog
+  if (!codeId && storeResult.rawLog) {
+    try {
+      const rawLogParsed = typeof storeResult.rawLog === 'string'
+        ? JSON.parse(storeResult.rawLog)
+        : storeResult.rawLog;
+
+      if (Array.isArray(rawLogParsed)) {
+        for (const log of rawLogParsed) {
+          if (log.events) {
+            for (const event of log.events) {
+              if (event.type === "store_code" && event.attributes) {
+                for (const attr of event.attributes) {
+                  if (attr.key === "code_id" || attr.key === "codeId") {
+                    codeId = Number(attr.value);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Игнорируем ошибки парсинга
+    }
+  }
+
+  // Если все еще не получилось, пробуем получить через query
+  if (!codeId) {
+    console.log("⚠️  Could not extract code ID from transaction, trying to query by transaction hash...");
+    try {
+      const tx = await client.getTx(storeResult.transactionHash);
+      if (tx && tx.logs && tx.logs.length > 0) {
+        for (const log of tx.logs) {
+          if (log.events) {
+            for (const event of log.events) {
+              if (event.type === "store_code" && event.attributes) {
+                for (const attr of event.attributes) {
+                  if (attr.key === "code_id" || attr.key === "codeId") {
+                    codeId = Number(attr.value);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to query transaction:", e.message);
+    }
+  }
+
+  if (!codeId) {
+    console.error("❌ Could not extract code ID from transaction");
+    console.error("Transaction hash:", storeResult.transactionHash);
+    console.error("Please use: node scripts/get_code_from_tx.js", storeResult.transactionHash);
     process.exit(1);
   }
 
-  const storeLog = storeResult.logs[0];
-  if (!storeLog || !storeLog.events) {
-    console.error("❌ No events in store log");
-    console.error("Log:", JSON.stringify(storeLog, null, 2));
-    process.exit(1);
-  }
-
-  const storeCodeEvent = storeLog.events.find((e) => e.type === "store_code");
-  if (!storeCodeEvent) {
-    console.error("❌ store_code event not found");
-    console.error("Available events:", storeLog.events.map((e) => e.type));
-    process.exit(1);
-  }
-
-  const codeIdAttr = storeCodeEvent.attributes.find(
-    (a) => a.key === "code_id"
-  );
-  if (!codeIdAttr) {
-    console.error("❌ code_id attribute not found");
-    console.error("Available attributes:", storeCodeEvent.attributes.map((a) => a.key));
-    process.exit(1);
-  }
-
-  const codeId = Number(codeIdAttr.value);
   console.log("Code ID:", codeId);
 
   // Instantiate message для cw20
