@@ -102,15 +102,39 @@ async function main() {
     console.error("Transaction hash:", storeResult.transactionHash);
     process.exit(1);
   }
-  
+
   console.log("✅ Code stored successfully!");
   console.log("Transaction hash:", storeResult.transactionHash);
 
+  if (!storeResult.logs || storeResult.logs.length === 0) {
+    console.error("❌ No logs in store transaction");
+    console.error("Full result:", JSON.stringify(storeResult, null, 2));
+    process.exit(1);
+  }
+
   const storeLog = storeResult.logs[0];
+  if (!storeLog || !storeLog.events) {
+    console.error("❌ No events in store log");
+    console.error("Log:", JSON.stringify(storeLog, null, 2));
+    process.exit(1);
+  }
+
   const storeCodeEvent = storeLog.events.find((e) => e.type === "store_code");
+  if (!storeCodeEvent) {
+    console.error("❌ store_code event not found");
+    console.error("Available events:", storeLog.events.map((e) => e.type));
+    process.exit(1);
+  }
+
   const codeIdAttr = storeCodeEvent.attributes.find(
     (a) => a.key === "code_id"
   );
+  if (!codeIdAttr) {
+    console.error("❌ code_id attribute not found");
+    console.error("Available attributes:", storeCodeEvent.attributes.map((a) => a.key));
+    process.exit(1);
+  }
+
   const codeId = Number(codeIdAttr.value);
   console.log("Code ID:", codeId);
 
