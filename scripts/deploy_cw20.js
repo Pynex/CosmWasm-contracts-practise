@@ -117,10 +117,10 @@ async function main() {
     }
   }
 
-  // Если не получилось из события, используем фиксированный code ID 28
+  // Если не получилось из события, используем фиксированный code ID 4
   if (!codeId) {
-    codeId = 29;
-    console.log("⚠️  Could not extract code ID from event, using 28");
+    codeId = 4;
+    console.log("⚠️  Could not extract code ID from event, using 4");
   }
 
   if (!codeId) {
