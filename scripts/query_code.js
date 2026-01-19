@@ -4,7 +4,7 @@ const { SigningStargateClient, GasPrice } = require("@cosmjs/stargate");
 const { DirectSecp256k1HdWallet } = require("@cosmjs/proto-signing");
 const { stringToPath } = require("@cosmjs/crypto");
 
-const RPC_ENDPOINT = "http://206.189.115.37:26657/";
+const RPC_ENDPOINT = "http://api-docs.axiomeinfo.org:26657";
 const BECH32_PREFIX = "axm";
 
 async function connect(mnemonic, rpcEndpoint) {

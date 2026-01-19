@@ -13,7 +13,7 @@ const {
   MsgInstantiateContract,
 } = require("cosmjs-types/cosmwasm/wasm/v1/tx");
 
-const RPC_ENDPOINT = "http://206.189.115.37:26657/";
+const RPC_ENDPOINT = "http://api-docs.axiomeinfo.org:26657";
 const BECH32_PREFIX = "axm";
 
 // Пробуем сначала standart_cw20, потом cw20
@@ -119,7 +119,7 @@ async function main() {
 
   // Если не получилось из события, используем фиксированный code ID 28
   if (!codeId) {
-    codeId = 28;
+    codeId = 29;
     console.log("⚠️  Could not extract code ID from event, using 28");
   }
 
